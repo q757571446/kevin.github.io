@@ -252,7 +252,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/05/vue2-0升级文档/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/06/事件处理/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Kevin Hao">
@@ -271,7 +271,148 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/12/05/vue2-0升级文档/" itemprop="url">双向绑定</a></h1>
+                <a class="post-title-link" href="/2017/12/06/事件处理/" itemprop="url">事件处理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-06T14:54:07+08:00">
+                2017-12-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Vue2-0/" itemprop="url" rel="index">
+                    <span itemprop="name">Vue2.0</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/05/双向绑定/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Kevin Hao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars0.githubusercontent.com/u/13860006?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Kevin">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/12/05/双向绑定/" itemprop="url">双向绑定</a></h1>
         
 
         <div class="post-meta">
@@ -355,14 +496,14 @@
 <blockquote>
 <p>需要注意一点的是，data中声明的字段不再能够以<code>_</code>或<code>$</code>开头。所以这里以<code>p_</code>定义备份的属性字段,子组件内部通过操作备份字段触发绑定属性的变动</p>
 </blockquote>
-<h4 id="基于mixin机制升级版写法"><a href="#基于mixin机制升级版写法" class="headerlink" title="基于mixin机制升级版写法"></a>基于mixin机制升级版写法</h4><p>为避免在组件中存在大量代码冗余，其实我们可以使用mixin机制进行hook<br><figure class="highlight plain"><figcaption><span>child.vue</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">import twoWays from &apos;two-way.js&apos;</span><br><span class="line">export default &#123;</span><br><span class="line">  ...</span><br><span class="line">  mixins:[twoWays],</span><br><span class="line">  props: &#123;</span><br><span class="line">    show: &#123;</span><br><span class="line">      type: Boolean,</span><br><span class="line">      default: false,</span><br><span class="line">      twoWay: true</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  method:&#123;</span><br><span class="line">    changeStatusA() &#123;</span><br><span class="line">      this.p_show=true</span><br><span class="line">    &#125;,</span><br><span class="line">    changeStatusB() &#123;</span><br><span class="line">      this.p_show=false</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br><figure class="highlight plain"><figcaption><span>two-way.js</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">export default &#123;</span><br><span class="line">    data() &#123;</span><br><span class="line">      return this.getTwoWayProps().reduce((ret,key)=&gt;&#123;</span><br><span class="line">        ret[`p_$&#123;key&#125;`]=this.$props[key]</span><br><span class="line">        return ret</span><br><span class="line">      &#125;,&#123;&#125;)</span><br><span class="line">    &#125;,</span><br><span class="line">    methods: &#123;</span><br><span class="line">        getTwoWayProps() &#123;</span><br><span class="line">            return Object.keys(this.$options.props||&#123;&#125;).filter(key=&gt;&#123;</span><br><span class="line">                return this.$options.props[key] &amp;&amp; this.$options.props[key].twoWay</span><br><span class="line">            &#125;)</span><br><span class="line">        &#125;,</span><br><span class="line">        handleChanged(key, val) &#123;</span><br><span class="line">          this[key]=val</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    created() &#123;</span><br><span class="line">        this.getTwoWayProps().forEach(key =&gt; &#123;</span><br><span class="line">            this.$watch(key, val =&gt; this.handleChanged(key, val))</span><br><span class="line">            this.$watch(`p_$&#123;key&#125;`, val =&gt; this.$emit(`update:$&#123;key&#125;`, val))</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<h4 id="基于mixin机制升级版写法"><a href="#基于mixin机制升级版写法" class="headerlink" title="基于mixin机制升级版写法"></a>基于mixin机制升级版写法</h4><p>为避免在组件中存在大量代码冗余，其实我们可以使用mixin机制进行hook<br><figure class="highlight plain"><figcaption><span>child.vue</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">import twoWays from &apos;two-way.js&apos;</span><br><span class="line">export default &#123;</span><br><span class="line">  ...</span><br><span class="line">  mixins:[twoWays],</span><br><span class="line">  props: &#123;</span><br><span class="line">    show: &#123;</span><br><span class="line">      type: Boolean,</span><br><span class="line">      default: false,</span><br><span class="line">      twoWay: true</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  method:&#123;</span><br><span class="line">    changeStatusA() &#123;</span><br><span class="line">      this.p_show=true</span><br><span class="line">    &#125;,</span><br><span class="line">    changeStatusB() &#123;</span><br><span class="line">      this.p_show=false</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br><figure class="highlight plain"><figcaption><span>two-way.js</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">export default &#123;</span><br><span class="line">    data() &#123;</span><br><span class="line">      return this.getTwoWayProps().reduce((ret,key)=&gt;&#123;</span><br><span class="line">        ret[`p_$&#123;key&#125;`]=this.$props[key]</span><br><span class="line">        return ret</span><br><span class="line">      &#125;,&#123;&#125;)</span><br><span class="line">    &#125;,</span><br><span class="line">    methods: &#123;</span><br><span class="line">        getTwoWayProps() &#123;</span><br><span class="line">            return Object.keys(this.$options.props||&#123;&#125;).filter(key=&gt;&#123;</span><br><span class="line">                return this.$options.props[key] &amp;&amp; this.$options.props[key].twoWay</span><br><span class="line">            &#125;)</span><br><span class="line">        &#125;,</span><br><span class="line">        handleChanged(key, val) &#123;</span><br><span class="line">          this[`p_$&#123;key&#125;`]=val</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    created() &#123;</span><br><span class="line">        this.getTwoWayProps().forEach(key =&gt; &#123;</span><br><span class="line">            this.$watch(key, val =&gt; this.handleChanged(key, val))</span><br><span class="line">            this.$watch(`p_$&#123;key&#125;`, val =&gt; this.$emit(`update:$&#123;key&#125;`, val))</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
 <h4 id="结尾"><a href="#结尾" class="headerlink" title="结尾"></a>结尾</h4><ul>
 <li><strong>需要双向绑定的组件中引入该mixin，也可以全局注册mixin</strong></li>
 <li><strong>子组件在需要双向绑定的属性声明<code>twoWay: true</code></strong></li>
 <li><strong>父组件在双向绑定的属性采用语法糖<code>:xxx.sync</code></strong></li>
 <li><strong>子组件使用备份后的字段<code>p_xxx</code>操作双向绑定的属性</strong></li>
 </ul>
-<script async src="//jsfiddle.net/KevinHao/bkokqq0o/embed/js,html,result/"></script>
+<script async src="//jsfiddle.net/KevinHao/bkokqq0o/21/embed/js,html,result/"></script>
           
         
       
@@ -447,7 +588,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-count">2</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
