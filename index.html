@@ -345,7 +345,9 @@
       
         
           
-            
+            <h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>在1.0中为解决组件之间通信问题，引入了$dispatch和$broadcast负责事件发送，提供了events字段负责事件监听。在2.0中这些api都已经被废弃，官方提供了两种升级方案。</p>
+<h4 id="EventHub事件中心"><a href="#EventHub事件中心" class="headerlink" title="EventHub事件中心"></a>EventHub事件中心</h4><p>对于所有Vue实例都提供了<code>$emit</code>, <code>$on</code>, <code>$off</code>的默认实现。因此我们可以提供一个空的Vue实例处理组件间通信问题。对于所有需要通信的组件，可以取得该Vue实例进行事件的发送，注册。</p>
+
           
         
       
@@ -503,7 +505,7 @@
 <li><strong>父组件在双向绑定的属性采用语法糖<code>:xxx.sync</code></strong></li>
 <li><strong>子组件使用备份后的字段<code>p_xxx</code>操作双向绑定的属性</strong></li>
 </ul>
-<script async src="//jsfiddle.net/KevinHao/bkokqq0o/21/embed/js,html,result/"></script>
+<script async src="//jsfiddle.net/KevinHao/w2jquazt/embed/"></script>
           
         
       
