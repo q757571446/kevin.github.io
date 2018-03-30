@@ -79,16 +79,19 @@
 
 
 
-<meta name="description" content="This is description">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Kevin">
-<meta property="og:url" content="http://yoursite.com/index.html">
+<meta name="description" content="前言其实讲服务端路由有点不合理，本质上来说应该是RPC远程过程调用。设计路由的本质是要解决业务模块化依赖问题，而这里所想要解决是微服务之间的服务调用问题。这里使用技术栈是(Spring+Netty+Protostuff+Eureka)。  Spring：主要使用依赖注入以及相关的注解 Netty：使用TCP进行服务间通信 Protostuff: 负责序列化和反序列化 eureka：服务注册及实例">
+<meta property="og:type" content="article">
+<meta property="og:title" content="服务端路由设计">
+<meta property="og:url" content="http://yoursite.com/2018/03/30/RPC框架/index.html">
 <meta property="og:site_name" content="Kevin">
-<meta property="og:description" content="This is description">
+<meta property="og:description" content="前言其实讲服务端路由有点不合理，本质上来说应该是RPC远程过程调用。设计路由的本质是要解决业务模块化依赖问题，而这里所想要解决是微服务之间的服务调用问题。这里使用技术栈是(Spring+Netty+Protostuff+Eureka)。  Spring：主要使用依赖注入以及相关的注解 Netty：使用TCP进行服务间通信 Protostuff: 负责序列化和反序列化 eureka：服务注册及实例">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2018/03/30/RPC框架/微服务.png">
+<meta property="og:updated_time" content="2018-03-30T07:23:17.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Kevin">
-<meta name="twitter:description" content="This is description">
+<meta name="twitter:title" content="服务端路由设计">
+<meta name="twitter:description" content="前言其实讲服务端路由有点不合理，本质上来说应该是RPC远程过程调用。设计路由的本质是要解决业务模块化依赖问题，而这里所想要解决是微服务之间的服务调用问题。这里使用技术栈是(Spring+Netty+Protostuff+Eureka)。  Spring：主要使用依赖注入以及相关的注解 Netty：使用TCP进行服务间通信 Protostuff: 负责序列化和反序列化 eureka：服务注册及实例">
+<meta name="twitter:image" content="http://yoursite.com/2018/03/30/RPC框架/微服务.png">
 
 
 
@@ -118,13 +121,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/"/>
+  <link rel="canonical" href="http://yoursite.com/2018/03/30/RPC框架/"/>
 
 
 
 
 
-  <title>Kevin</title>
+  <title>服务端路由设计 | Kevin</title>
   
 
 
@@ -143,8 +146,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-  page-home">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -237,9 +239,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -269,9 +271,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/30/RPC框架/" itemprop="url">服务端路由设计</a></h1>
+          <h1 class="post-title" itemprop="name headline">服务端路由设计</h1>
         
 
         <div class="post-meta">
@@ -343,9 +343,7 @@
       
 
       
-        
-          
-            <h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>其实讲服务端路由有点不合理，本质上来说应该是RPC远程过程调用。设计路由的本质是要解决业务模块化依赖问题，而这里所想要解决是微服务之间的服务调用问题。这里使用技术栈是(Spring+Netty+Protostuff+Eureka)。</p>
+        <h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>其实讲服务端路由有点不合理，本质上来说应该是RPC远程过程调用。设计路由的本质是要解决业务模块化依赖问题，而这里所想要解决是微服务之间的服务调用问题。这里使用技术栈是(Spring+Netty+Protostuff+Eureka)。</p>
 <ol>
 <li>Spring：主要使用依赖注入以及相关的注解</li>
 <li>Netty：使用TCP进行服务间通信</li>
@@ -365,8 +363,6 @@
 <h4 id="与服务端建立TCP连接"><a href="#与服务端建立TCP连接" class="headerlink" title="与服务端建立TCP连接"></a>与服务端建立TCP连接</h4><p>服务端提供的服务都注册在eureka中，我们可以基于服务名拿到注册服务的主机地址和端口，因此我们便可以使用netty进行tcp连接。<br><figure class="highlight plain"><figcaption><span>HippoClientBootstrap</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">public class HippoClientBootstrap implements Comparable&lt;HippoClientBootstrap&gt; &#123;</span><br><span class="line">  private String host;</span><br><span class="line">  private int port;</span><br><span class="line">  private String serviceName;</span><br><span class="line">  private HippoRequestHandler handler;</span><br><span class="line">  private AtomicLong invokeTimes = new AtomicLong(0);</span><br><span class="line">  private NioEventLoopGroup eventLoopGroup;</span><br><span class="line"></span><br><span class="line">  public HippoClientBootstrap(String serviceName, String host, int port) throws Exception &#123;</span><br><span class="line">    this.serviceName = serviceName;</span><br><span class="line">    this.host = host;</span><br><span class="line">    this.port = port;</span><br><span class="line">    init();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  private void init() &#123;</span><br><span class="line">    eventLoopGroup = new NioEventLoopGroup(1);</span><br><span class="line">    try &#123;</span><br><span class="line">      Bootstrap bootstrap = new Bootstrap();</span><br><span class="line">      handler = new HippoRequestHandler(this.serviceName, eventLoopGroup, this.host, this.port);</span><br><span class="line">      bootstrap.group(eventLoopGroup);</span><br><span class="line">      bootstrap.channel(NioSocketChannel.class);</span><br><span class="line">      bootstrap.option(ChannelOption.TCP_NODELAY, true);</span><br><span class="line">      bootstrap.handler(new ChannelInitializer&lt;SocketChannel&gt;() &#123;</span><br><span class="line">        @Override</span><br><span class="line">        public void initChannel(SocketChannel channel) throws Exception &#123;</span><br><span class="line">          channel.pipeline().addLast(new IdleStateHandler(0, 30, 0, TimeUnit.SECONDS))</span><br><span class="line">              .addLast(new HippoEncoder(HippoRequest.class))</span><br><span class="line">              .addLast(new HippoDecoder(HippoResponse.class)).addLast(handler);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;);</span><br><span class="line">      bootstrap.connect(host, port).sync();</span><br><span class="line">    &#125; catch (Exception e) &#123;</span><br><span class="line">      throw new HippoServiceUnavailableException(</span><br><span class="line">          &quot;[&quot; + this.serviceName + &quot;]服务不可用,初始化失败.host:&quot; + host + &quot;,port:&quot; + port, e);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>而一旦连接建立，当客户端进行远程调用的时候，当调用服务端的方法时，其实本质上是发送一个包含方法及参数的请求包装类，<br>然后通过netty的writeAndFlush操作发送过去，当服务端通过cglib反射调用后拿到返回值时，客户端这边便能在channelRead中进行返回值的接收。<br><figure class="highlight plain"><figcaption><span>HippoRequestHandler</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br></pre></td><td class="code"><pre><span class="line">public class HippoRequestHandler extends SimpleChannelInboundHandler&lt;HippoResponse&gt; &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  private static final Logger LOGGER = LoggerFactory.getLogger(HippoRequestHandler.class);</span><br><span class="line"></span><br><span class="line">  private ConcurrentHashMap&lt;String, HippoResultCallBack&gt; callBackMap = new ConcurrentHashMap&lt;&gt;();</span><br><span class="line">  private String serviceName;</span><br><span class="line">  private EventLoopGroup eventLoopGroup;</span><br><span class="line">  private Channel channel;</span><br><span class="line">  private String host;</span><br><span class="line">  private int port;</span><br><span class="line"></span><br><span class="line">  public HippoRequestHandler(String serviceName, EventLoopGroup eventLoopGroup, String host,</span><br><span class="line">      int port) &#123;</span><br><span class="line">    this.serviceName = serviceName;</span><br><span class="line">    this.eventLoopGroup = eventLoopGroup;</span><br><span class="line">    this.host = host;</span><br><span class="line">    this.port = port;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  @Override</span><br><span class="line">  public void channelRegistered(ChannelHandlerContext ctx) throws Exception &#123;</span><br><span class="line">    super.channelRegistered(ctx);</span><br><span class="line">    this.channel = ctx.channel();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  @Override</span><br><span class="line">  protected void channelRead0(ChannelHandlerContext arg0, HippoResponse response) throws Exception &#123;</span><br><span class="line">    // ping不需要记录到返回结果MAP里</span><br><span class="line">    if (response != null &amp;&amp; !(&quot;-99&quot;).equals(response.getRequestId())) &#123;</span><br><span class="line">      HippoClientProcessPool.INSTANCE.getPool().execute(() -&gt; &#123;</span><br><span class="line">        HippoResultCallBack hippoResultCallBack = callBackMap.remove(response.getRequestId());</span><br><span class="line">        // oneway方式没有hippoResultCallBack</span><br><span class="line">        if (hippoResultCallBack == null) &#123;</span><br><span class="line">          return;</span><br><span class="line">        &#125;</span><br><span class="line">        RemoteCallHandler handler = CallTypeHandler.INSTANCE</span><br><span class="line">            .getHandler(hippoResultCallBack.getHippoRequest().getCallType());</span><br><span class="line">        if (handler != null) &#123;</span><br><span class="line">          handler.back(hippoResultCallBack, response);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  @Override</span><br><span class="line">  public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception &#123;</span><br><span class="line">    super.userEventTriggered(ctx, evt);</span><br><span class="line">    if (evt instanceof IdleStateEvent) &#123;</span><br><span class="line">      IdleStateEvent e = (IdleStateEvent) evt;</span><br><span class="line">      if (e.state() == IdleState.WRITER_IDLE) &#123;</span><br><span class="line">        HippoRequest hippoRequest = new HippoRequest();</span><br><span class="line">        hippoRequest.setServiceName(serviceName);</span><br><span class="line">        hippoRequest.setRequestId(&quot;-99&quot;);</span><br><span class="line">        hippoRequest.setRequestType(HippoRequestEnum.PING.getType());</span><br><span class="line">        ctx.writeAndFlush(hippoRequest);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  @Override</span><br><span class="line">  public void channelInactive(ChannelHandlerContext ctx) throws Exception &#123;</span><br><span class="line">    super.channelInactive(ctx);</span><br><span class="line">    ctx.close();</span><br><span class="line">    if (eventLoopGroup != null) &#123;</span><br><span class="line">      eventLoopGroup.shutdownGracefully();</span><br><span class="line">    &#125;</span><br><span class="line">    this.callBackMap.values().forEach(c -&gt; &#123;</span><br><span class="line">      HippoResponse response = new HippoResponse();</span><br><span class="line">      response.setError(true);</span><br><span class="line">      response.setThrowable(</span><br><span class="line">          new HippoServiceException(&quot;hippo server error trigger client channelInactive&quot;));</span><br><span class="line">      c.signal(response);</span><br><span class="line">    &#125;);</span><br><span class="line">    callBackMap.clear();</span><br><span class="line"></span><br><span class="line">    HippoClientBootstrapMap.remove(serviceName, host, port);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public void sendAsync(HippoResultCallBack hippoResultCallBack) &#123;</span><br><span class="line">    callBackMap.put(hippoResultCallBack.getHippoRequest().getRequestId(), hippoResultCallBack);</span><br><span class="line">    this.channel.writeAndFlush(hippoResultCallBack.getHippoRequest());</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public HippoResponse sendOneWay(HippoRequest hippoRequest) &#123;</span><br><span class="line">    this.channel.writeAndFlush(hippoRequest);</span><br><span class="line">    return buildEmptyHippoResponse(hippoRequest);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public HippoResponse sendWithCallBack(HippoResultCallBack hippoResultCallBack) &#123;</span><br><span class="line">    sendAsync(hippoResultCallBack);</span><br><span class="line">    return buildEmptyHippoResponse(hippoResultCallBack.getHippoRequest());</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  private HippoResponse buildEmptyHippoResponse(HippoRequest hippoRequest) &#123;</span><br><span class="line">    HippoResponse hippoResponse = new HippoResponse();</span><br><span class="line">    hippoResponse.setRequestId(hippoRequest.getRequestId());</span><br><span class="line">    hippoResponse.setChainId(hippoRequest.getChainId());</span><br><span class="line">    hippoResponse.setChainOrder(hippoRequest.getChainOrder());</span><br><span class="line">    return hippoResponse;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  @Override</span><br><span class="line">  public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception &#123;</span><br><span class="line">    LOGGER.error(&quot;netty client error&quot;, cause.fillInStackTrace());</span><br><span class="line">    HippoClientBootstrapMap.remove(serviceName, host, port);</span><br><span class="line">    ctx.close();</span><br><span class="line">    if (eventLoopGroup != null) &#123;</span><br><span class="line">      eventLoopGroup.shutdownGracefully();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <h4 id="服务间调用的处理"><a href="#服务间调用的处理" class="headerlink" title="服务间调用的处理"></a>服务间调用的处理</h4><p>首先对服务可能存在会挂掉的情况，所以这里使用了Hystrix对熔断和降级处理。<br><figure class="highlight plain"><figcaption><span>HippoCommand</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br></pre></td><td class="code"><pre><span class="line">public class HippoCommand extends HystrixCommand&lt;Object&gt; &#123;</span><br><span class="line"></span><br><span class="line">  private HippoRequest hippoRequest;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  private HippoResponse hippoResponse;</span><br><span class="line"></span><br><span class="line">  private int timeout;</span><br><span class="line"></span><br><span class="line">  private int retryTimes;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  private HippoFailPolicy&lt;?&gt; hippoFailPolicy;</span><br><span class="line"></span><br><span class="line">  public HippoCommand(HippoRequest hippoRequest, int timeOut, int retryTimes,</span><br><span class="line">      boolean isCircuitBreaker, int semaphoreMaxConcurrentRequests, Class&lt;?&gt; downgradeStrategy,</span><br><span class="line">      boolean fallbackEnabled) throws InstantiationException, IllegalAccessException &#123;</span><br><span class="line"></span><br><span class="line">    // 默认隔离策略是线程 也可以是信号量,现在采用的是信号量的模式</span><br><span class="line">    // 信号量隔离是个限流的策略</span><br><span class="line">    // 因为是自己实现的超时机制，所以关闭hystrix的超时机制</span><br><span class="line">    super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey(hippoRequest.getServiceName()))</span><br><span class="line">        .andCommandKey(HystrixCommandKey.Factory.asKey(hippoRequest.getClassName()))</span><br><span class="line">        .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()</span><br><span class="line">            .withExecutionIsolationStrategy(</span><br><span class="line">                HystrixCommandProperties.ExecutionIsolationStrategy.SEMAPHORE)</span><br><span class="line">            .withExecutionIsolationSemaphoreMaxConcurrentRequests(semaphoreMaxConcurrentRequests)</span><br><span class="line">            .withFallbackEnabled(fallbackEnabled).withCircuitBreakerEnabled(isCircuitBreaker)</span><br><span class="line">            .withExecutionTimeoutEnabled(false)));</span><br><span class="line"></span><br><span class="line">    this.hippoRequest = hippoRequest;</span><br><span class="line">    this.timeout = timeOut;</span><br><span class="line">    this.retryTimes = retryTimes;</span><br><span class="line"></span><br><span class="line">    if (fallbackEnabled) &#123;</span><br><span class="line">      init(downgradeStrategy);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  private void init(Class&lt;?&gt; downgradeStrategy)</span><br><span class="line">      throws InstantiationException, IllegalAccessException &#123;</span><br><span class="line">    if (HippoFailPolicy.class.isAssignableFrom(downgradeStrategy)) &#123;</span><br><span class="line">      // 先从spring容器里面拿，如果没有，则new</span><br><span class="line">      try &#123;</span><br><span class="line">        Object bean = HippoClientInit.getApplicationContext().getBean(downgradeStrategy);</span><br><span class="line">        hippoFailPolicy = (HippoFailPolicy&lt;?&gt;) bean;</span><br><span class="line">      &#125; catch (Exception e) &#123;</span><br><span class="line">        hippoFailPolicy = (HippoFailPolicy&lt;?&gt;) downgradeStrategy.newInstance();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      hippoFailPolicy = new HippoFailPolicyDefaultImpl();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  @Override</span><br><span class="line">  protected Object run() throws Exception &#123;</span><br><span class="line">    HippoResponse result = getHippoResponse(hippoRequest, timeout, retryTimes);</span><br><span class="line">    // 超时异常记录到熔断器里</span><br><span class="line">    // 看看后续有没必要加上排他异常(比如如果是xxx异常也可以不触发fallback类似HystrixBadRequestException)</span><br><span class="line">    if (result.isError() &amp;&amp; result.getThrowable() instanceof HippoReadTimeoutException) &#123;</span><br><span class="line">      hippoResponse = result;</span><br><span class="line">      throw (HippoReadTimeoutException) result.getThrowable();</span><br><span class="line">    &#125;</span><br><span class="line">    return result;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  @Override</span><br><span class="line">  protected Object getFallback() &#123;</span><br><span class="line">    return hippoFailPolicy.failCallBack(hippoResponse);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public HippoResponse getHippoResponse(HippoRequest request, int timeout, int retryTimes)</span><br><span class="line">      throws Exception &#123;</span><br><span class="line">    HippoResponse result = getResult(request, timeout);</span><br><span class="line">    if (result.isError() &amp;&amp; result.getThrowable() instanceof HippoReadTimeoutException</span><br><span class="line">        &amp;&amp; retryTimes &gt; 0) &#123;</span><br><span class="line">      return getHippoResponse(request, timeout, retryTimes - 1);</span><br><span class="line">    &#125;</span><br><span class="line">    return result;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  private HippoResponse getResult(HippoRequest request, int timeout) throws Exception &#123;</span><br><span class="line"></span><br><span class="line">    HippoClientBootstrap hippoClientBootstrap =</span><br><span class="line">        HippoClientBootstrapMap.getBootstrap(request.getServiceName());</span><br><span class="line">    if (hippoClientBootstrap == null) &#123;</span><br><span class="line">      throw new HippoServiceUnavailableException(&quot;[&quot; + request.getServiceName() + &quot;]没有可用的服务&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    RemoteCallHandler handler = CallTypeHandler.INSTANCE.getHandler(request.getCallType());</span><br><span class="line">    if (handler == null) &#123;</span><br><span class="line">      throw new HippoRequestTypeNotExistException(request.getCallType() + &quot;不符合的现有的callType&quot;);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    return handler.call(hippoClientBootstrap, hippoRequest, timeout);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>而服务间调用方式大致可以分成三种类型，及同步，异步，单向调用不需返回值。不同的调用方式反馈在netty处理response的操作不同。这里的同步调用其实本质上是异步，只不过阻塞了方法。当response返回的时候，停止阻塞<br><figure class="highlight plain"><figcaption><span>CallType</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public enum CallType &#123;</span><br><span class="line">  SYNC(&quot;同步调用&quot;), ONEWAY(&quot;单向发送不需要拿返回结果&quot;), ASYNC(&quot;异步调用,可以从callback拿返回结果&quot;);</span><br><span class="line"></span><br><span class="line">  private String desc;</span><br><span class="line"></span><br><span class="line">  CallType(String desc) &#123;</span><br><span class="line">    this.desc = desc;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public String getDesc() &#123;</span><br><span class="line">    return desc;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br><figure class="highlight plain"><figcaption><span>RemoteCallHandler</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public interface RemoteCallHandler &#123;</span><br><span class="line"></span><br><span class="line">  HippoResponse call(HippoClientBootstrap HippoClientBootstrap, HippoRequest hippoRequest,</span><br><span class="line">      int timeOut) throws Exception;</span><br><span class="line"></span><br><span class="line">  void back(HippoResultCallBack hippoResultCallBack, HippoResponse hippoResponse);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br><figure class="highlight plain"><figcaption><span>HippoResultCallBack</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">public class HippoResultCallBack &#123;</span><br><span class="line">  private Lock lock = new ReentrantLock();</span><br><span class="line">  private Condition finish = lock.newCondition();</span><br><span class="line">  private int timeout;</span><br><span class="line">  private HippoResponse hippoResponse;</span><br><span class="line">  private HippoRequest hippoRequest;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  public HippoRequest getHippoRequest() &#123;</span><br><span class="line">    return hippoRequest;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  protected HippoResultCallBack(HippoRequest hippoRequest, int timeout) &#123;</span><br><span class="line">    this.hippoRequest = hippoRequest;</span><br><span class="line">    this.timeout = timeout;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public void signal(HippoResponse hippoResponse) &#123;</span><br><span class="line">    this.hippoResponse = hippoResponse;</span><br><span class="line">    try &#123;</span><br><span class="line">      lock.lock();</span><br><span class="line">      finish.signal();</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">      lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public HippoResponse getResult() &#123;</span><br><span class="line">    try &#123;</span><br><span class="line">      int waitTime = timeout;</span><br><span class="line">      lock.lock();</span><br><span class="line">      // 最大1分钟超时</span><br><span class="line">      if (waitTime &lt;= 0) &#123;</span><br><span class="line">        waitTime = 60000;</span><br><span class="line">      &#125;</span><br><span class="line">      if (!finish.await(waitTime, TimeUnit.MILLISECONDS)) &#123;</span><br><span class="line">        hippoResponse = new HippoResponse();</span><br><span class="line">        BeanUtils.copyProperties(hippoRequest, hippoResponse);</span><br><span class="line">        hippoResponse.setError(true);</span><br><span class="line">        hippoResponse.setRequestId(hippoRequest.getRequestId());</span><br><span class="line">        hippoResponse.setThrowable(</span><br><span class="line">            new HippoReadTimeoutException(&quot;[&quot; + hippoRequest + &quot;]超时,超时时间[&quot; + waitTime + &quot;]毫秒&quot;));</span><br><span class="line">      &#125;</span><br><span class="line">    &#125; catch (InterruptedException e) &#123;</span><br><span class="line">      hippoResponse = new HippoResponse();</span><br><span class="line">      BeanUtils.copyProperties(hippoRequest, hippoResponse);</span><br><span class="line">      hippoResponse.setError(true);</span><br><span class="line">      hippoResponse.setThrowable(e);</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">      lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">    return hippoResponse;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 
-          
-        
       
     </div>
     
@@ -383,190 +379,28 @@
       
 
       
-
-      
-
       
       
-        <div class="post-eof"></div>
+
       
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/03/22/路由设计/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Kevin Hao">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars0.githubusercontent.com/u/13860006?s=460&v=4">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Kevin">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/03/22/路由设计/" itemprop="url">移动端路由设计</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
             
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-22T20:06:22+08:00">
-                2018-03-22
-              </time>
+              <a href="/2018/03/22/路由设计/" rel="next" title="移动端路由设计">
+                <i class="fa fa-chevron-left"></i> 移动端路由设计
+              </a>
             
+          </div>
 
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
             
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/路由/" itemprop="url" rel="index">
-                    <span itemprop="name">路由</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
+          </div>
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          
-            <h4 id="初衷"><a href="#初衷" class="headerlink" title="初衷"></a>初衷</h4><p>产生对原生应用进行路由设计的初衷，是在很久以前移动端应用还在hybrid时。我们引用了一个移动端跨平台开发的框架weex，用于取代原来html5维护的业务。在原来html5的方案中，我们通过scheme来唤起原生页面。<br><figure class="highlight plain"><figcaption><span>html</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;a href=&quot;baidufe://schemedemo/get/info?id=10000&quot;&gt;open baidufe android app&lt;/a&gt;</span><br></pre></td></tr></table></figure><br><figure class="highlight plain"><figcaption><span>manifest</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;activity android:name=&quot;com.baidufe.shemedemo.SchemeActivity&quot;</span><br><span class="line">          android:label=&quot;@string/app_name&quot;&gt;</span><br><span class="line">    &lt;intent-filter&gt;</span><br><span class="line">        &lt;data android:scheme=&quot;baidufe&quot;/&gt;</span><br><span class="line">        &lt;category android:name=&quot;android.intent.category.DEFAULT&quot;/&gt;</span><br><span class="line">        &lt;action android:name=&quot;android.intent.action.VIEW&quot;/&gt;</span><br><span class="line">        &lt;category android:name=&quot;android.intent.category.BROWSABLE&quot;/&gt;</span><br><span class="line">    &lt;/intent-filter&gt;</span><br><span class="line">&lt;/activity&gt;</span><br></pre></td></tr></table></figure><br>后来发现在处理以下这些业务场景时，以上方案存在了种种掣肘</p>
-<h5 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h5><ol>
-<li>接收通知，打开应用内的某个页面</li>
-<li>html5维护的页面跳转到原生页面</li>
-<li>页面降级，在低版本手机降级到h5</li>
-<li>屏蔽掉一些不合法的链接</li>
-</ol>
-<h5 id="弊端"><a href="#弊端" class="headerlink" title="弊端"></a>弊端</h5><ul>
-<li>显示：startActivity需要知道目标界面class，导致类耦合太大</li>
-<li>隐式：需要向目标界面传递参数，传参的key变动。调用方及使用方都需变动</li>
-<li>符合Android.manifest的scheme链接都可以直接打开</li>
-<li>无法动态拦截跳转，动态降级</li>
-<li>Android, H5, Ios三端协议皆不一致</li>
-</ul>
-<p>并且在引入了weex方案之后，因为社区和类库的不完善。没有一个路由解决方案。这使得我们在非原生和原生之间跳转出现了问题，同时原有scheme方案灵活性不够的弊端也逐渐凸显。<br>另一个方面的原因是由于应用页面的增多，项目逐渐开始变得臃肿不堪。我们开始着手对代码进行模块化隔离，而各模块之间由于解除了依赖关系，所以模块间跳转也出现了问题。<br><img src="/2018/03/22/路由设计/image_1.png" alt=""><br>而当一个应用有了路由之后可以是这样的<br><img src="/2018/03/22/路由设计/image_2.png" alt=""></p>
-<h4 id="路由协议"><a href="#路由协议" class="headerlink" title="路由协议"></a>路由协议</h4><p>路由的本质在于根据某个协议，找到他该去的目标界面。我们根据VueRouter的协议做了一些改造。主要原因是对于界面调整而言，带参跳转是一个常见的业务需求。而js是弱类型的，Java是强类型的。使用处通常需要知道带参的类型<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">scheme://host/path/:s&#123;key1&#125;/:i&#123;key2&#125;/:f&#123;key3&#125;/:d&#123;key4&#125;/:l&#123;key5&#125;/:c&#123;key6&#125;?key=value</span><br><span class="line">activity://LoginActivity/:s&#123;username&#125;/:i&#123;password&#125;?params=haha</span><br><span class="line">controller://LoginController/:s&#123;username&#125;/:i&#123;password&#125;?params=haha</span><br><span class="line">s: String</span><br><span class="line">i: Integer</span><br><span class="line">f: Float</span><br><span class="line">d: Double</span><br><span class="line">l: Long</span><br><span class="line">c: Char</span><br></pre></td></tr></table></figure><br><figure class="highlight plain"><figcaption><span>目标界面</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">@Route(&quot;activity://example/:s&#123;username&#125;/:i&#123;password&#125;&quot;)</span><br><span class="line">public class ExampleActivity extends Activity&#123;</span><br><span class="line">    @Override</span><br><span class="line">    protected void onCreate(Bundle savedInstanceState) &#123;</span><br><span class="line">        super.onCreate(savedInstanceState);</span><br><span class="line">        setContentView(R.layout.activity_example);</span><br><span class="line">        initDataFromIntent();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void initDataFromIntent() &#123;</span><br><span class="line">        //get params in intent</span><br><span class="line">        String username = getIntent().getStringExtra(&quot;username&quot;);</span><br><span class="line">        int password = getIntent().getIntExtra(&quot;password&quot;, -1);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br><figure class="highlight plain"><figcaption><span>跳转到目标界面</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@Route(&quot;activity://example/:s&#123;username&#125;/:i&#123;password&#125;&quot;)</span><br><span class="line">ActivityRequest.from(this, &quot;activity://example/kevin/123455&quot;)</span><br><span class="line">                .open();</span><br></pre></td></tr></table></figure><br>这样将原来的startActivity(context, ExampleActivity.class)的跳转方式，转换成可以通过url<code>activity://example/kevin/123455</code>转场。</p>
-<h4 id="路由注册"><a href="#路由注册" class="headerlink" title="路由注册"></a>路由注册</h4><p>想要完成上述骚操作，首先必须维护一个静态的路由表。记录着key-value的映射关系，这样我们可以对key制定协议，进而找到对应界面value。首先要处理的第一件事是路由表的注册问题<br><img src="/2018/03/22/路由设计/image_3.png" alt=""><br><img src="/2018/03/22/路由设计/image_4.png" alt=""><br>我们提供两种注册方式</p>
-<ol>
-<li><p>注解</p>
-<figure class="highlight plain"><figcaption><span>注解</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@Route(&quot;activity://four/:s&#123;username&#125;/:i&#123;password&#125;&quot;)</span><br><span class="line">public class FourActivity extends ExtrasActivity&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>手动</p>
-<figure class="highlight plain"><figcaption><span>手动</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">RouterClient.getSingleton().registerActivityRouter(new ActivityRouterFactory() &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void initialize(Map&lt;String, Class&lt;? extends Activity&gt;&gt; tables) &#123;</span><br><span class="line">        tables.put(&quot;activity://one&quot;, OneActivity.class);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<p>路由注册实现方式主要利用了apt插件，编译时处理Route注解</p>
-<figure class="highlight plain"><figcaption><span>RouterProcessor</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">private void generateInitializer(Set&lt;? extends Element&gt; elements) throws IOException &#123;</span><br><span class="line">    TypeElement initializer = elementUtils.getTypeElement(&quot;com.hippo.router.factory.RouterInitializer&quot;);</span><br><span class="line">    ParameterizedTypeName superInterface = ParameterizedTypeName.get(ClassName.get(initializer), ClassName.OBJECT);</span><br><span class="line"></span><br><span class="line">    ParameterizedTypeName mapTypeName = ParameterizedTypeName</span><br><span class="line">            .get(ClassName.get(Map.class), ClassName.get(String.class), ParameterizedTypeName.get(ClassName.get(Class.class), WildcardTypeName.subtypeOf(Object.class)));</span><br><span class="line"></span><br><span class="line">    ParameterSpec tables = ParameterSpec.builder(mapTypeName, &quot;tables&quot;)</span><br><span class="line">            .build();</span><br><span class="line"></span><br><span class="line">    MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(&quot;initialize&quot;)</span><br><span class="line">            .addAnnotation(Override.class) //add ann</span><br><span class="line">            .addModifiers(Modifier.PUBLIC)</span><br><span class="line">            .addParameter(tables);</span><br><span class="line"></span><br><span class="line">    for(Element element : elements)&#123;</span><br><span class="line">        if(element.getKind() != ElementKind.CLASS)&#123;</span><br><span class="line">            throw new TargetErrorException();</span><br><span class="line">        &#125;</span><br><span class="line">        String router = element.getAnnotation(Route.class).value();//get annotation in activity</span><br><span class="line"></span><br><span class="line">        ClassName clazz = ClassName.get((TypeElement)element);</span><br><span class="line">        methodBuilder.addStatement(&quot;tables.put($S, $T.class)&quot;, router, clazz);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    TypeSpec clazz = TypeSpec.classBuilder(GENERATE_CLASS_NAME)</span><br><span class="line">            .addSuperinterface(superInterface)</span><br><span class="line">            .addModifiers(Modifier.PUBLIC)</span><br><span class="line">            .addMethod(methodBuilder.build())</span><br><span class="line">            .build();</span><br><span class="line">    JavaFile javaFile = JavaFile.builder(GENERATE_PACKAGE_NAME, clazz).build();</span><br><span class="line">    javaFile.writeTo(mFiler);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>主要生成一个Initialize类，而RouterInitializer会在应用启动时被调用，初始化路由表</p>
-<figure class="highlight plain"><figcaption><span>HippoRouterInitializer</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public class HippoRouterInitializer implements RouterInitializer&lt;Object&gt; &#123;</span><br><span class="line">  @Override</span><br><span class="line">  public void initialize(Map&lt;String, Class&lt;?&gt;&gt; tables) &#123;</span><br><span class="line">    tables.put(&quot;activity://eight/:key1/:&#123;key2&#125;/:s&#123;key3&#125;/:i&#123;key4&#125;/:f&#123;key5&#125;/:l&#123;key6&#125;/:d&#123;key7&#125;/:c&#123;key8&#125;&quot;, EightActivity.class);</span><br><span class="line">    tables.put(&quot;activity://five/:s&#123;username&#125;/:i&#123;password&#125;&quot;, FiveActivity.class);</span><br><span class="line">    tables.put(&quot;activity://four/:s&#123;username&#125;/:i&#123;password&#125;&quot;, FourActivity.class);</span><br><span class="line">    tables.put(&quot;activity://nine/:key1/:&#123;key2&#125;/:s&#123;key3&#125;/:i&#123;key4&#125;/:f&#123;key5&#125;/:l&#123;key6&#125;/:d&#123;key7&#125;/:c&#123;key8&#125;&quot;, NineActivity.class);</span><br><span class="line">    tables.put(&quot;activity://seven/:key1/:&#123;key2&#125;/:s&#123;key3&#125;/:i&#123;key4&#125;/:f&#123;key5&#125;/:l&#123;key6&#125;/:d&#123;key7&#125;/:c&#123;key8&#125;&quot;, SevenActivity.class);</span><br><span class="line">    tables.put(&quot;activity://six/:s&#123;username&#125;/test/:i&#123;password&#125;&quot;, SixActivity.class);</span><br><span class="line">    tables.put(&quot;activity://ten/admin/hippo/router/12345/0.11/12312/0.33/a&quot;, TenActivity.class);</span><br><span class="line">    tables.put(&quot;activity://three/:username/:password&quot;, ThreeActivity.class);</span><br><span class="line">    tables.put(&quot;activity://two&quot;, TwoActivity.class);</span><br><span class="line">    tables.put(&quot;activity://ten/admin/hippo/router/12345/0.11/12312/0.33/a&quot;, TenFragment.class);</span><br><span class="line">    tables.put(&quot;activity://wrap&quot;, WrapActivity.class);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<h4 id="路由解析"><a href="#路由解析" class="headerlink" title="路由解析"></a>路由解析</h4><p>这里主要是基于之前定义的协议，提供的默认解析规则，用于查找到目标界面的Class，进而可以跳转到目标界面。<br><figure class="highlight plain"><figcaption><span>Router</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">protected final Map.Entry&lt;String, Class&lt;? extends T&gt;&gt; match(P request,Map&lt;String, Class&lt;? extends T&gt;&gt; tables) throws  RouteNotFoundException &#123;</span><br><span class="line">      List&lt;String&gt; givenPathSegs = request.getPath();</span><br><span class="line">      OutLoop:</span><br><span class="line">      for (Map.Entry&lt;String, Class&lt;? extends T&gt;&gt; entry : tables.entrySet()) &#123;</span><br><span class="line">          String routeUrl = entry.getKey();</span><br><span class="line">          List&lt;String&gt; routePathSegs = getPathSegments(routeUrl);</span><br><span class="line">          if (!TextUtils.equals(getHost(routeUrl), request.getHost())) &#123;</span><br><span class="line">              continue;</span><br><span class="line">          &#125;</span><br><span class="line">          if (givenPathSegs.size() != routePathSegs.size()) &#123;</span><br><span class="line">              continue;</span><br><span class="line">          &#125;</span><br><span class="line">          for (int i = 0; i &lt; routePathSegs.size(); i++) &#123;</span><br><span class="line">              String routePathSeg = routePathSegs.get(i);</span><br><span class="line">              String givenPathSeg = givenPathSegs.get(i);</span><br><span class="line"></span><br><span class="line">              if(routePathSeg.startsWith(&quot;:&quot;))&#123;</span><br><span class="line"></span><br><span class="line">              &#125;else if (!TextUtils.equals(routePathSeg, givenPathSeg)) &#123;</span><br><span class="line">                  continue;</span><br><span class="line">              &#125;</span><br><span class="line">          &#125;</span><br><span class="line">          return entry;</span><br><span class="line">      &#125;</span><br><span class="line">      throw new RouteNotFoundException(request.getUrl());</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></p>
-<h4 id="路由扩展"><a href="#路由扩展" class="headerlink" title="路由扩展"></a>路由扩展</h4><p>这个接口会在路由初始化时被调用，用于初始化化路由表及创建处理路由的实例。<br><figure class="highlight plain"><figcaption><span>RouterFactory</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public interface RouterFactory&lt;T,P extends Request,R extends Router&lt;T,P&gt;&gt;  extends RouterInitializer&lt;T&gt; &#123;</span><br><span class="line">    R buildInstance();</span><br><span class="line">    void initialize(Map&lt;String,Class&lt;? extends T&gt;&gt; tables);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<figure class="highlight plain"><figcaption><span>路由实例化工厂</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public abstract class FragmentRouterFactory implements RouterFactory&lt;Fragment,FragmentRequest,FragmentRouter&gt; &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public FragmentRouter buildInstance() &#123;</span><br><span class="line">        return new FragmentRouter();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><figcaption><span>路由处理类</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">public class FragmentRouter extends Router&lt;Fragment,FragmentRequest&gt;&#123;</span><br><span class="line">      @Override</span><br><span class="line">    protected boolean handle(FragmentRequest request, Map.Entry&lt;String, Class&lt;? extends Fragment&gt;&gt; entry) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            int attachId = request.getAttachId();</span><br><span class="line">            Fragment attachFragment = entry.getValue().newInstance();</span><br><span class="line">            Bundle bundle = getBundle(request, entry);</span><br><span class="line">            attachFragment.setArguments(bundle);</span><br><span class="line">            request.getFragmentManager()</span><br><span class="line">                    .beginTransaction()</span><br><span class="line">                    .setCustomAnimations(request.getAnimationIn(),request.getAnimationOut())</span><br><span class="line">                    .add(attachId, attachFragment)</span><br><span class="line">                    .commit();</span><br><span class="line">            return true;</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        return false;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><figcaption><span>路由包装类</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public class FragmentRequest extends Request&#123;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><figcaption><span>注册</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">@Route(&quot;fragment://five/:s&#123;username&#125;/:i&#123;password&#125;&quot;)</span><br><span class="line">public class FiveFragment extends ExtrasFragment &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected void initWidget(View view) &#123;</span><br><span class="line">        super.initWidget(view);</span><br><span class="line"></span><br><span class="line">        String username = getIntent().getStringExtra(&quot;username&quot;);</span><br><span class="line">        int password = getIntent().getIntExtra(&quot;password&quot;, -1);</span><br><span class="line"></span><br><span class="line">        Bitmap bitmap = getArguments().getParcelable(&quot;bitmap&quot;);</span><br><span class="line">        ImageView imageView = new ImageView(getActivity());</span><br><span class="line">        imageView.setImageBitmap(bitmap);</span><br><span class="line">        ((ViewGroup)view).addView(imageView);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><figcaption><span>使用</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Bitmap bitmap = BitmapFactory.decodeResource(this.getResources(), R.mipmap.xiaoxing);</span><br><span class="line">FragmentRequest.from(getSupportFragmentManager(), &quot;fragment://five/kevin/123&quot;)</span><br><span class="line">        .withParams(&quot;bitmap&quot;,bitmap)</span><br><span class="line">        .attach(R.id.container);</span><br></pre></td></tr></table></figure>
-<p><img src="/2018/03/22/路由设计/Main.png" alt="https://github.com/q757571446/HippoRouter"></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -576,321 +410,11 @@
   </article>
 
 
-    
-      
 
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/06/事件处理/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Kevin Hao">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars0.githubusercontent.com/u/13860006?s=460&v=4">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Kevin">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/12/06/事件处理/" itemprop="url">事件处理</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-06T14:54:07+08:00">
-                2017-12-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Vue2-0/" itemprop="url" rel="index">
-                    <span itemprop="name">Vue2.0</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>在1.0中为解决组件之间通信问题，引入了$dispatch和$broadcast负责事件发送，提供了events字段负责事件监听。在2.0中这些api都已经被废弃，官方提供了两种升级方案(EventHub及Vuex),这里主要介绍其中一种写法。</p>
-<h4 id="1-0版本中的事件写法"><a href="#1-0版本中的事件写法" class="headerlink" title="1.0版本中的事件写法"></a>1.0版本中的事件写法</h4><figure class="highlight plain"><figcaption><span>Send.vue</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">export default &#123;</span><br><span class="line">  ...</span><br><span class="line">  methods: &#123;</span><br><span class="line">    sendEvent()&#123;</span><br><span class="line">      this.$dispatch(&apos;eventName&apos;, value)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><figcaption><span>Recieve.vue</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">export default &#123;</span><br><span class="line">  ...</span><br><span class="line">  events: &#123;</span><br><span class="line">    eventName(value)&#123;</span><br><span class="line">      ...doSomeThing</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="使用EventHub处理组件通信"><a href="#使用EventHub处理组件通信" class="headerlink" title="使用EventHub处理组件通信"></a>使用EventHub处理组件通信</h4><p>对于所有Vue实例都提供了<code>$emit</code>, <code>$on</code>, <code>$off</code>的默认实现。因此我们可以提供一个空的Vue实例处理组件间通信问题。</p>
-<h5 id="普通写法"><a href="#普通写法" class="headerlink" title="普通写法"></a>普通写法</h5><p>我们需要在根组件挂载一个EventHub,这样我们就可以在子组件中通过<code>this.$root.eventHub</code>来访问这个事件中心<br>初始化实例<br><figure class="highlight plain"><figcaption><span>app.vue</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">new Vue(&#123;</span><br><span class="line">  el: &apos;#app&apos;,</span><br><span class="line">  data() &#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      eventHub: new Vue()</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure><br>发送事件<br><figure class="highlight plain"><figcaption><span>Send.vue</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">export default &#123;</span><br><span class="line">  ...</span><br><span class="line">  methods: &#123;</span><br><span class="line">    sendEvent()&#123;</span><br><span class="line">      this.$root.eventHub.$emit(&apos;eventName&apos;, value)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>监听事件<br><figure class="highlight plain"><figcaption><span>Recieve.vue</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">export default &#123;</span><br><span class="line">  ...</span><br><span class="line">  methods: &#123;</span><br><span class="line">    onRecieve(value)&#123;</span><br><span class="line">      ...doSomeThing</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  created() &#123;</span><br><span class="line">    this.$root.eventHub.$on(&apos;eventName&apos;, this.onRecieve)</span><br><span class="line">  &#125;,</span><br><span class="line">  beforeDestroy() &#123;</span><br><span class="line">    this.$root.eventHub.$off(&apos;eventName&apos;, this.onRecieve)</span><br><span class="line">  &#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h5 id="升级写法"><a href="#升级写法" class="headerlink" title="升级写法"></a>升级写法</h5><p>同样的这样会产生大量冗余代码，我们依然可以通过mixins机制简化代码<br><figure class="highlight plain"><figcaption><span>Recieve.vue</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">import EventsMixin from &apos;events-mixin&apos;</span><br><span class="line">export default &#123;</span><br><span class="line">  ...</span><br><span class="line">  mixins: [EventsMixin],</span><br><span class="line">  events: &#123;</span><br><span class="line">    eventName(value)&#123;</span><br><span class="line">      ...doSomeThing</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>我们可以使用1.0中的events写法，同时在mixins中可以通过<code>this.$options</code>拿到events中保存的事件名以及需要触发的方法<br><figure class="highlight plain"><figcaption><span>events-mixin.js</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">export default &#123;</span><br><span class="line">    created() &#123;</span><br><span class="line">        Object.keys(this.$options.events||&#123;&#125;).forEach(key =&gt; &#123;</span><br><span class="line">            this.$root.eventHub.$on(key, this.$options.events[key].bind(this))</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;,</span><br><span class="line">    beforeDestroy() &#123;</span><br><span class="line">        Object.keys(this.$options.events||&#123;&#125;).forEach(key =&gt; &#123;</span><br><span class="line">            this.$root.eventHub.$off(key, this.$options.events[key].bind(this))</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>当然对于更复杂的组件通信问题，可以使用更多简明清晰的组件间通信和更好的状态管理方案vuex</p>
-<h4 id="结尾"><a href="#结尾" class="headerlink" title="结尾"></a>结尾</h4><ul>
-<li>使用处引入该mixins文件</li>
-<li>使用eventHub发送事件</li>
-<li>使用events字段接受事件</li>
-</ul>
-<script async src="//jsfiddle.net/KevinHao/w2jquazt/14/embed/"></script>
-          
-        
+    <div class="post-spread">
       
     </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
   </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/05/双向绑定/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Kevin Hao">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars0.githubusercontent.com/u/13860006?s=460&v=4">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Kevin">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/12/05/双向绑定/" itemprop="url">双向绑定</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-05T16:46:06+08:00">
-                2017-12-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Vue2-0/" itemprop="url" rel="index">
-                    <span itemprop="name">Vue2.0</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>在Vue1.0到Vue2.0的版本移除了双向绑定，这会使得组件状态的变动不可预测。因此我们不再能够在child之中直接操作parent传递下来的属性。这么做的好处是单向数据流使得组件的状态变动可预测，但不可避免的是子组件需要通过事件回传更改后双向绑定属性的值。</p>
-<h4 id="1-0版本中双向绑定的写法"><a href="#1-0版本中双向绑定的写法" class="headerlink" title="1.0版本中双向绑定的写法"></a>1.0版本中双向绑定的写法</h4><figure class="highlight plain"><figcaption><span>parent.vue</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;child :show.sync=&quot;value&quot;&gt;&lt;/child&gt;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><figcaption><span>child.vue</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">export default &#123;</span><br><span class="line">  ...</span><br><span class="line">  props: &#123;</span><br><span class="line">    show: &#123;</span><br><span class="line">      type: Boolean,</span><br><span class="line">      default: false,</span><br><span class="line">      twoWay: true</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  method:&#123;</span><br><span class="line">    changeStatus() &#123;</span><br><span class="line">      this.show=true</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="2-3版本中双向绑定的写法"><a href="#2-3版本中双向绑定的写法" class="headerlink" title="2.3版本中双向绑定的写法"></a>2.3版本中双向绑定的写法</h4><figure class="highlight plain"><figcaption><span>parent.vue</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;child :show.sync=&quot;value&quot;&gt;&lt;/child&gt;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><figcaption><span>child.vue</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">export default &#123;</span><br><span class="line">  ...</span><br><span class="line">  props: &#123;</span><br><span class="line">    show: &#123;</span><br><span class="line">      type: Boolean,</span><br><span class="line">      default: false</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  method:&#123;</span><br><span class="line">    changeStatus() &#123;</span><br><span class="line">      this.$emit(&apos;update:show&apos;,true)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>本质上是vue-loader在编译prop.sync的语法糖时生成了下面代码<br><code>&lt;child :show=&quot;value&quot; @on-show-change=&quot;(newVal)=&gt;value=newVal&quot;&gt;&lt;/child&gt;</code></p>
-<p>以上仅是举了一个简单的例子，对于复杂状态的组件，可能存在多个位置对属性进行更改。一般会将需要操作的属性丢在data中clone一份，组件对备份后的属性进行使用及操作<br><figure class="highlight plain"><figcaption><span>child.vue</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">export default &#123;</span><br><span class="line">  ...</span><br><span class="line">  data() &#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      p_show: this.show</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  props: &#123;</span><br><span class="line">    show: &#123;</span><br><span class="line">      type: Boolean,</span><br><span class="line">      default: false</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  method:&#123;</span><br><span class="line">    changeStatusA() &#123;</span><br><span class="line">      this.p_show=true</span><br><span class="line">    &#125;,</span><br><span class="line">    changeStatusB() &#123;</span><br><span class="line">      this.p_show=false</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  watch: &#123;</span><br><span class="line">    show(newVal)&#123;</span><br><span class="line">      this.p_show=newVal</span><br><span class="line">    &#125;,</span><br><span class="line">    p_show(newVal)&#123;</span><br><span class="line">      this.$emit(&apos;update:show&apos;,newVal)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<blockquote>
-<p>需要注意一点的是，data中声明的字段不再能够以<code>_</code>或<code>$</code>开头。所以这里以<code>p_</code>定义备份的属性字段,子组件内部通过操作备份字段触发绑定属性的变动</p>
-</blockquote>
-<h4 id="基于mixin机制升级版写法"><a href="#基于mixin机制升级版写法" class="headerlink" title="基于mixin机制升级版写法"></a>基于mixin机制升级版写法</h4><p>为避免在组件中存在大量代码冗余，其实我们可以使用mixin机制进行hook<br><figure class="highlight plain"><figcaption><span>child.vue</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">import twoWays from &apos;two-way.js&apos;</span><br><span class="line">export default &#123;</span><br><span class="line">  ...</span><br><span class="line">  mixins:[twoWays],</span><br><span class="line">  props: &#123;</span><br><span class="line">    show: &#123;</span><br><span class="line">      type: Boolean,</span><br><span class="line">      default: false,</span><br><span class="line">      twoWay: true</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  method:&#123;</span><br><span class="line">    changeStatusA() &#123;</span><br><span class="line">      this.p_show=true</span><br><span class="line">    &#125;,</span><br><span class="line">    changeStatusB() &#123;</span><br><span class="line">      this.p_show=false</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br><figure class="highlight plain"><figcaption><span>two-way.js</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">export default &#123;</span><br><span class="line">    data() &#123;</span><br><span class="line">      return this.getTwoWayProps().reduce((ret,key)=&gt;&#123;</span><br><span class="line">        ret[`p_$&#123;key&#125;`]=this.$props[key]</span><br><span class="line">        return ret</span><br><span class="line">      &#125;,&#123;&#125;)</span><br><span class="line">    &#125;,</span><br><span class="line">    methods: &#123;</span><br><span class="line">        getTwoWayProps() &#123;</span><br><span class="line">            return Object.keys(this.$options.props||&#123;&#125;).filter(key=&gt;&#123;</span><br><span class="line">                return this.$options.props[key] &amp;&amp; this.$options.props[key].twoWay</span><br><span class="line">            &#125;)</span><br><span class="line">        &#125;,</span><br><span class="line">        handleChanged(key, val) &#123;</span><br><span class="line">          this[`p_$&#123;key&#125;`]=val</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    created() &#123;</span><br><span class="line">        this.getTwoWayProps().forEach(key =&gt; &#123;</span><br><span class="line">            this.$watch(key, val =&gt; this.handleChanged(key, val))</span><br><span class="line">            this.$watch(`p_$&#123;key&#125;`, val =&gt; this.$emit(`update:$&#123;key&#125;`, val))</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
-<h4 id="结尾"><a href="#结尾" class="headerlink" title="结尾"></a>结尾</h4><ul>
-<li><strong>需要双向绑定的组件中引入该mixin，也可以全局注册mixin</strong></li>
-<li><strong>子组件在需要双向绑定的属性声明<code>twoWay: true</code></strong></li>
-<li><strong>父组件在双向绑定的属性采用语法糖<code>:xxx.sync</code></strong></li>
-<li><strong>子组件使用备份后的字段<code>p_xxx</code>操作双向绑定的属性</strong></li>
-</ul>
-<script async src="//jsfiddle.net/KevinHao/e74obnak/embed/"></script>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-  </section>
-
-  
 
 
           </div>
@@ -898,6 +422,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -918,8 +446,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -976,6 +513,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#服务端注册"><span class="nav-number">2.</span> <span class="nav-text">服务端注册</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#序列化与反序列化"><span class="nav-number">3.</span> <span class="nav-text">序列化与反序列化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#RPC远程调用的处理"><span class="nav-number">4.</span> <span class="nav-text">RPC远程调用的处理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#服务治理"><span class="nav-number">5.</span> <span class="nav-text">服务治理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#客户端使用"><span class="nav-number">6.</span> <span class="nav-text">客户端使用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#对服务端接口的代理"><span class="nav-number">7.</span> <span class="nav-text">对服务端接口的代理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#与服务端建立TCP连接"><span class="nav-number">8.</span> <span class="nav-text">与服务端建立TCP连接</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#服务间调用的处理"><span class="nav-number">9.</span> <span class="nav-text">服务间调用的处理</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -1109,6 +662,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
 
   
 
